@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+
+	<batch:job id="job1">
+		<batch:step id="person">
+			<batch:tasklet transaction-manager="transactionManager"
+				start-limit="100">
+				<batch:chunk reader="personItemReader" processor="personProcessor"
+					writer="personWriter" commit-interval="10" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="personItemReader"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader"
+		scope="step">
+		<property name="dataSource" ref="hsqldbDataSource" />
+		<property name="verifyCursorPosition" value="true" />
+		<property name="sql"
+			value="select NAME, AGE from PERSON" />
+		<property name="rowMapper">
+			<bean class="com.ubs.example.mapper.PersonRowMapper" />
+		</property>
+	</bean>
+</beans>

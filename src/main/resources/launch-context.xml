@@ -13,6 +13,32 @@
 
 	<context:component-scan base-package="com.ubs.example" />
 
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${batch.jdbc.driver}" />
+		<property name="url" value="${batch.jdbc.url}" />
+		<property name="username" value="${batch.jdbc.user}" />
+		<property name="password" value="${batch.jdbc.password}" />
+	</bean>
+
+	<jdbc:initialize-database data-source="dataSource">
+		<jdbc:script location="${batch.schema.script}" />
+	</jdbc:initialize-database>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<batch:job-repository id="jobRepository" />
+
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+	<import resource="classpath:/META-INF/spring/module-context.xml" />
+
+
 	<bean id="hsqldbDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${hsqldb.jdbc.driver}" />

@@ -15,11 +15,7 @@ public class PersonDAO {
 
 	@Autowired
 	@Qualifier("derbyJdbcTemplate")
-	private SimpleJdbcTemplate derby;
-
-	@Autowired
-	@Qualifier("hsqldbJdbcTemplate")
-	private SimpleJdbcTemplate hsqldb;
+	private SimpleJdbcTemplate template;
 
 	@Autowired
 	private PersonRowMapper mapper;
@@ -28,17 +24,17 @@ public class PersonDAO {
 
 		final String sql = "SELECT * FROM PERSON";
 
-		final List<Person> persons = derby.query(sql, mapper);
+		final List<Person> persons = template.query(sql, mapper);
 
 		return persons;
 	}
 
-	public List<Person> findAllHsqldb() {
+	public Person findByPersonName(final String name) {
 
-		final String sql = "SELECT * FROM PERSON";
+		final String sql = "SELECT * FROM PERSON WHERE NAME = ?";
 
-		final List<Person> persons = hsqldb.query(sql, mapper);
+		final Person person = template.queryForObject(sql, new PersonRowMapper(), new Object[] { name });
 
-		return persons;
+		return person;
 	}
 }
