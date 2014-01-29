@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:property-placeholder location="classpath:batch.properties" />
+
+	<context:component-scan base-package="com.ubs.example" />
+
+	<bean id="hsqldbDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${hsqldb.jdbc.driver}" />
+		<property name="url" value="${hsqldb.jdbc.url}" />
+		<property name="username" value="${hsqldb.jdbc.user}" />
+		<property name="password" value="${hsqldb.jdbc.password}" />
+	</bean>
+
+	<jdbc:initialize-database data-source="hsqldbDataSource">
+		<jdbc:script location="${hsqldb.schema.script}" />
+	</jdbc:initialize-database>
+
+	<bean id="hsqldbTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="hsqldbDataSource" />
+	</bean>
+
+	<bean name="hsqldbJdbcTemplate"
+		class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg>
+			<ref bean="hsqldbDataSource" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="derbyDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${derby.jdbc.driver}" />
+		<property name="url" value="${derby.jdbc.url}" />
+		<property name="username" value="${derby.jdbc.user}" />
+		<property name="password" value="${derby.jdbc.password}" />
+	</bean>
+
+	<jdbc:initialize-database data-source="derbyDataSource">
+		<jdbc:script location="${derby.schema.script}" />
+	</jdbc:initialize-database>
+
+	<bean id="derbyTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="derbyDataSource" />
+	</bean>
+
+	<bean name="derbyJdbcTemplate"
+		class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg>
+			<ref bean="derbyDataSource" />
+		</constructor-arg>
+	</bean>
+</beans>
